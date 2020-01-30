@@ -7,5 +7,5 @@ export const APP_COLORS = {
     secondaryText: "#757575",
     divider: "#EFEFEF",
     shadow: "#000",
-    lightPrimaryColor: "#CSCAE9"
+    lightPrimaryColor: '#0ABBD7'
 };
