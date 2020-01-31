@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 
-import { YellowBox } from 'react-native';
-
 import Header from './components/header';
 import TaskList from './components/task-list'; 
 import ButtonAddTask from './components/button-add-task';
 import MenuTask from './components/menu-task';
+import _ from 'lodash';
 
 console.disableYellowBox = true
 
@@ -97,8 +96,11 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { taskList };
-    console.log(this.state);
+    this.state = {
+      taskList,
+      isMenuTaskVisible: false,
+      currentTask: {}
+    };
   }
 
   onPressButton = () => {
@@ -107,18 +109,35 @@ export default class App extends React.Component {
     
   }
 
+  toggleMenuTaskVisibility = task => {
+    this.setState({ 
+      isMenuTaskVisible: !this.state.isMenuTaskVisible,
+      currentTask: task === undefined ? {} : task
+    });
+  }
+
   displayMenuTask = (taskContent) => {
     console.log('onPress', taskContent);
   }
 
-  render() {
+  deleteCurrentTask = () => {
+    const index = _.findIndex(this.state.taskList, {id: this.state.currentTask.id});
+    const list = this.state.taskList;
+
+    list.splice(index, 1);
+    this.setState({ taskList: list, currentTask: {} });
+    this.toggleMenuTaskVisibility();
+  }
+
+  render() { 
+    let { isMenuTaskVisible } = this.state;   
     return (
       <View style={{ flex: 1 }}>
         <Header content="Liste de tâches" />
           <ScrollView>
-            <TaskList taskList={this.state.taskList} onPressCallback={this.displayMenuTask}/>
+            <TaskList taskList={this.state.taskList} onPressCallback={this.toggleMenuTaskVisibility}/>
           </ScrollView>
-          <MenuTask />
+          <MenuTask isVisible={ isMenuTaskVisible } onDisappearCallback={this.toggleMenuTaskVisibility} onDeleteCallback={this.deleteCurrentTask} onChangeStatusCallback />
         <ButtonAddTask />
       </View>
     );
